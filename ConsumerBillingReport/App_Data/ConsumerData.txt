@@ -1,0 +1,7 @@
+Consumer	Date    	Jobcode 	Act. Hours
+"Eddy, Jerry"	7/3/2018	1:06	2.45
+"Eddy, Jerry"	7/3/2018	2:03	0.47
+"Eddy, Jerry"	7/3/2018	1:06	0.38
+"Eddy, Jerry"	7/3/2018	2:03	1.92
+"Eddy, Jerry"	7/3/2018	1:06	0.97
+"Eddy, Jerry"	8/20/2018	2:03	3.00
