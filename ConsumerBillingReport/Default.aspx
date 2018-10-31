@@ -21,7 +21,7 @@
 
     </asp:Label>
     <div>  
-        <CR:CrystalReportViewer ID="CrystalReportViewer1" runat="server" AutoDataBind="true"  PrintMode="ActiveX"/>
+        <CR:CrystalReportViewer ID="CrystalReportViewer1" runat="server" AutoDataBind="true" ToolPanelView="None" HasToggleGroupTreeButton="False" HasToggleParameterPanelButton="False" />
     </div>
 
 </asp:Content>
