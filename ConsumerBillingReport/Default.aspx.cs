@@ -62,7 +62,7 @@ namespace TSheetReports
             ReportDocument crystalReport = new ReportDocument();
             crystalReport.Load(Server.MapPath("CrystalReport2.rpt"));
 
-            DataTable dataTable1 = PayrollByJobcodeReportSample(sDate, eDate);
+            DataTable dataTable1 = ConsumerBillingReport(sDate, eDate);
             //Sort datatable
             dataTable1.DefaultView.Sort = "Consumer Name, Jobcode";
             dataTable1 = dataTable1.DefaultView.ToTable();
@@ -114,7 +114,7 @@ namespace TSheetReports
             }
         }
 
-        public DataTable PayrollByJobcodeReportSample(DateTimeOffset sDate, DateTimeOffset eDate)
+        public DataTable ConsumerBillingReport(DateTimeOffset sDate, DateTimeOffset eDate)
         {
             var tsheetsApi = new RestClient(_connection, _authProvider);
 
@@ -180,8 +180,19 @@ namespace TSheetReports
                         {
                             string rateId = jc.Name[10].ToString(); //RateId A,B,C,D,E,F
 
+                            long overSeconds = totals.Value.TotalReSeconds % 900;
+                            long roundedSeconds = totals.Value.TotalReSeconds - overSeconds;
+                            double roundedHours = utility.DurationToHours(roundedSeconds);
+
                             double hours = utility.DurationToHours(totals.Value.TotalReSeconds);
+                            //double hours = roundedHours;
+
                             int units = utility.DurationToUnits(totals.Value.TotalReSeconds);
+                            //int units = utility.DurationToUnits(roundedSeconds);
+
+                            string logEntry = $"Consumer: {consumer} TotalReSeconds: {totals.Value.TotalReSeconds} overSeconds: {overSeconds} roundedSeconds: {roundedSeconds} roundedHours: {roundedHours} ";
+
+                            log.Info(logEntry);
 
                             double ratio = (double)totals.Value.TotalReSeconds / totalHours;
                             double percentage = ratio * 100;
@@ -192,10 +203,35 @@ namespace TSheetReports
                             table.Rows.Add(consumer, jc.Name, hours, units, percentage, rateEntry.WCode, rateEntry.BillRate, amount);
                         }
                     }
+
+
+                    foreach (KeyValuePair<string, Dictionary<string, Total>> dates in userObject.Value.Dates)
+                    {
+                        string date = dates.Key;
+                        foreach (KeyValuePair<string, Total> dateTotals in dates.Value)
+                        {
+                            var jobcodes = pbjReportObject.SupplementalData.Jobcodes;
+                            if (jobcodes.TryGetValue(dateTotals.Value.JobcodeId.ToString(), out PBJReport.Jobcode jc))
+                            {
+                                double hours = utility.DurationToHours(dateTotals.Value.TotalReSeconds);
+                                int units = utility.DurationToUnits(dateTotals.Value.TotalReSeconds);
+                                string logEntry = $"Consumer: {consumer} Date: {date} Jobcode: {jc.Name} TotalReSeconds: {dateTotals.Value.TotalReSeconds} Hours: {hours} Units: {units} ";
+
+                                log.Info(logEntry);
+                            }
+
+                        }
+
+
+                    }
+
                 }
             }
             return table;
         }
+
+
+
 
         public RateCodeEntry FindRate(string rateId, double percent)
         {
