@@ -283,11 +283,13 @@ namespace TSheetReports {
             
             private global::System.Data.DataColumn columnJobcode;
             
+            private global::System.Data.DataColumn columnDate;
+            
             private global::System.Data.DataColumn columnHours;
             
             private global::System.Data.DataColumn columnUnits;
             
-            private global::System.Data.DataColumn _columnRatio_;
+            private global::System.Data.DataColumn columnRatio;
             
             private global::System.Data.DataColumn columnWCode;
             
@@ -346,6 +348,14 @@ namespace TSheetReports {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "15.0.0.0")]
+            public global::System.Data.DataColumn DateColumn {
+                get {
+                    return this.columnDate;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "15.0.0.0")]
             public global::System.Data.DataColumn HoursColumn {
                 get {
                     return this.columnHours;
@@ -362,9 +372,9 @@ namespace TSheetReports {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "15.0.0.0")]
-            public global::System.Data.DataColumn _Ratio_Column {
+            public global::System.Data.DataColumn RatioColumn {
                 get {
-                    return this._columnRatio_;
+                    return this.columnRatio;
                 }
             }
             
@@ -429,14 +439,15 @@ namespace TSheetReports {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "15.0.0.0")]
-            public DataTable1Row AddDataTable1Row(string Consumer_Name, string Jobcode, double Hours, int Units, double _Ratio_, string WCode, double Rate, double Amount) {
+            public DataTable1Row AddDataTable1Row(string Consumer_Name, string Jobcode, string Date, double Hours, int Units, double Ratio, string WCode, double Rate, double Amount) {
                 DataTable1Row rowDataTable1Row = ((DataTable1Row)(this.NewRow()));
                 object[] columnValuesArray = new object[] {
                         Consumer_Name,
                         Jobcode,
+                        Date,
                         Hours,
                         Units,
-                        _Ratio_,
+                        Ratio,
                         WCode,
                         Rate,
                         Amount};
@@ -464,9 +475,10 @@ namespace TSheetReports {
             internal void InitVars() {
                 this.columnConsumer_Name = base.Columns["Consumer Name"];
                 this.columnJobcode = base.Columns["Jobcode"];
+                this.columnDate = base.Columns["Date"];
                 this.columnHours = base.Columns["Hours"];
                 this.columnUnits = base.Columns["Units"];
-                this._columnRatio_ = base.Columns["Ratio%"];
+                this.columnRatio = base.Columns["Ratio"];
                 this.columnWCode = base.Columns["WCode"];
                 this.columnRate = base.Columns["Rate"];
                 this.columnAmount = base.Columns["Amount"];
@@ -479,14 +491,14 @@ namespace TSheetReports {
                 base.Columns.Add(this.columnConsumer_Name);
                 this.columnJobcode = new global::System.Data.DataColumn("Jobcode", typeof(string), null, global::System.Data.MappingType.Element);
                 base.Columns.Add(this.columnJobcode);
+                this.columnDate = new global::System.Data.DataColumn("Date", typeof(string), null, global::System.Data.MappingType.Element);
+                base.Columns.Add(this.columnDate);
                 this.columnHours = new global::System.Data.DataColumn("Hours", typeof(double), null, global::System.Data.MappingType.Element);
                 base.Columns.Add(this.columnHours);
                 this.columnUnits = new global::System.Data.DataColumn("Units", typeof(int), null, global::System.Data.MappingType.Element);
                 base.Columns.Add(this.columnUnits);
-                this._columnRatio_ = new global::System.Data.DataColumn("Ratio%", typeof(double), null, global::System.Data.MappingType.Element);
-                this._columnRatio_.ExtendedProperties.Add("Generator_ColumnVarNameInTable", "_columnRatio_");
-                this._columnRatio_.ExtendedProperties.Add("Generator_UserColumnName", "Ratio%");
-                base.Columns.Add(this._columnRatio_);
+                this.columnRatio = new global::System.Data.DataColumn("Ratio", typeof(double), null, global::System.Data.MappingType.Element);
+                base.Columns.Add(this.columnRatio);
                 this.columnWCode = new global::System.Data.DataColumn("WCode", typeof(string), null, global::System.Data.MappingType.Element);
                 base.Columns.Add(this.columnWCode);
                 this.columnRate = new global::System.Data.DataColumn("Rate", typeof(double), null, global::System.Data.MappingType.Element);
@@ -667,6 +679,22 @@ namespace TSheetReports {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "15.0.0.0")]
+            public string Date {
+                get {
+                    try {
+                        return ((string)(this[this.tableDataTable1.DateColumn]));
+                    }
+                    catch (global::System.InvalidCastException e) {
+                        throw new global::System.Data.StrongTypingException("The value for column \'Date\' in table \'DataTable1\' is DBNull.", e);
+                    }
+                }
+                set {
+                    this[this.tableDataTable1.DateColumn] = value;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "15.0.0.0")]
             public double Hours {
                 get {
                     try {
@@ -699,17 +727,17 @@ namespace TSheetReports {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "15.0.0.0")]
-            public double _Ratio_ {
+            public double Ratio {
                 get {
                     try {
-                        return ((double)(this[this.tableDataTable1._Ratio_Column]));
+                        return ((double)(this[this.tableDataTable1.RatioColumn]));
                     }
                     catch (global::System.InvalidCastException e) {
-                        throw new global::System.Data.StrongTypingException("The value for column \'Ratio%\' in table \'DataTable1\' is DBNull.", e);
+                        throw new global::System.Data.StrongTypingException("The value for column \'Ratio\' in table \'DataTable1\' is DBNull.", e);
                     }
                 }
                 set {
-                    this[this.tableDataTable1._Ratio_Column] = value;
+                    this[this.tableDataTable1.RatioColumn] = value;
                 }
             }
             
@@ -787,6 +815,18 @@ namespace TSheetReports {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "15.0.0.0")]
+            public bool IsDateNull() {
+                return this.IsNull(this.tableDataTable1.DateColumn);
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "15.0.0.0")]
+            public void SetDateNull() {
+                this[this.tableDataTable1.DateColumn] = global::System.Convert.DBNull;
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "15.0.0.0")]
             public bool IsHoursNull() {
                 return this.IsNull(this.tableDataTable1.HoursColumn);
             }
@@ -811,14 +851,14 @@ namespace TSheetReports {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "15.0.0.0")]
-            public bool Is_Ratio_Null() {
-                return this.IsNull(this.tableDataTable1._Ratio_Column);
+            public bool IsRatioNull() {
+                return this.IsNull(this.tableDataTable1.RatioColumn);
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "15.0.0.0")]
-            public void Set_Ratio_Null() {
-                this[this.tableDataTable1._Ratio_Column] = global::System.Convert.DBNull;
+            public void SetRatioNull() {
+                this[this.tableDataTable1.RatioColumn] = global::System.Convert.DBNull;
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
