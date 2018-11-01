@@ -60,12 +60,12 @@ namespace TSheetReports
             DateTimeOffset eDate = ut.FromString(txtEndDate.Text);
 
             ReportDocument crystalReport = new ReportDocument();
-            crystalReport.Load(Server.MapPath("CrystalReport2.rpt"));
+            crystalReport.Load(Server.MapPath("CrystalReport3.rpt"));
 
             DataTable dataTable1 = ConsumerBillingReportSummary(sDate, eDate);
             
             //Sort datatable
-            dataTable1.DefaultView.Sort = "ConsumerName, Jobcode, Date";
+            dataTable1.DefaultView.Sort = "ConsumerName, Jobcode";
             dataTable1 = dataTable1.DefaultView.ToTable();
 
             DataSet1 ds = new DataSet1();
