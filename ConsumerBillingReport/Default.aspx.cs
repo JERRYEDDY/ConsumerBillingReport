@@ -61,12 +61,15 @@ namespace TSheetReports
             DateTimeOffset eDate = ut.FromString(txtEndDate.Text);
 
             ReportDocument crystalReport = new ReportDocument();
-            crystalReport.Load(Server.MapPath("CrystalReport3.rpt"));
+            crystalReport.Load(Server.MapPath("CrystalReport2.rpt"));
 
             DataTable dataTable1 = ConsumerBillingReportSummary(sDate, eDate);
-            
+
+
+
+
             //Sort datatable
-            dataTable1.DefaultView.Sort = "ConsumerName, Jobcode, Date";
+            dataTable1.DefaultView.Sort = "ConsumerName, Jobcode";
             dataTable1 = dataTable1.DefaultView.ToTable();
 
             DataSet1 ds = new DataSet1();
@@ -195,7 +198,7 @@ namespace TSheetReports
 
                             double amount = units * rateEntry.BillRate;
 
-                            cbeTable.Rows.Add(consumer, jc.Name, sDate.DateTime, hours, units, percentage, rateEntry.WCode, rateEntry.BillRate, amount);
+                            cbeTable.Rows.Add(consumer, jc.Name, hours, units, percentage, rateEntry.WCode, rateEntry.BillRate, amount);
                         }
                     }
 
@@ -321,7 +324,7 @@ namespace TSheetReports
                                 double percentage = ratio * 100;
                                 double amount = units * rateEntry.BillRate;
 
-                                cbeTable.Rows.Add(consumer, jc.Name, parsedDateTime.ToString("MM-dd-yyyy"), hours, units, percentage, rateEntry.WCode, rateEntry.BillRate, amount);
+                                cbeTable.Rows.Add(consumer, jc.Name, hours, units, percentage, rateEntry.WCode, rateEntry.BillRate, amount);
                             }
                         }
                     }

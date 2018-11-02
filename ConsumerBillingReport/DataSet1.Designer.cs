@@ -283,8 +283,6 @@ namespace TSheetReports {
             
             private global::System.Data.DataColumn columnJobcode;
             
-            private global::System.Data.DataColumn columnDate;
-            
             private global::System.Data.DataColumn columnHours;
             
             private global::System.Data.DataColumn columnUnits;
@@ -343,14 +341,6 @@ namespace TSheetReports {
             public global::System.Data.DataColumn JobcodeColumn {
                 get {
                     return this.columnJobcode;
-                }
-            }
-            
-            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "15.0.0.0")]
-            public global::System.Data.DataColumn DateColumn {
-                get {
-                    return this.columnDate;
                 }
             }
             
@@ -439,12 +429,11 @@ namespace TSheetReports {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "15.0.0.0")]
-            public DataTable1Row AddDataTable1Row(string ConsumerName, string Jobcode, System.DateTime Date, double Hours, int Units, double _Ratio_, string WCode, double Rate, double Amount) {
+            public DataTable1Row AddDataTable1Row(string ConsumerName, string Jobcode, double Hours, int Units, double _Ratio_, string WCode, double Rate, double Amount) {
                 DataTable1Row rowDataTable1Row = ((DataTable1Row)(this.NewRow()));
                 object[] columnValuesArray = new object[] {
                         ConsumerName,
                         Jobcode,
-                        Date,
                         Hours,
                         Units,
                         _Ratio_,
@@ -475,7 +464,6 @@ namespace TSheetReports {
             internal void InitVars() {
                 this.columnConsumerName = base.Columns["ConsumerName"];
                 this.columnJobcode = base.Columns["Jobcode"];
-                this.columnDate = base.Columns["Date"];
                 this.columnHours = base.Columns["Hours"];
                 this.columnUnits = base.Columns["Units"];
                 this._columnRatio_ = base.Columns["Ratio%"];
@@ -491,8 +479,6 @@ namespace TSheetReports {
                 base.Columns.Add(this.columnConsumerName);
                 this.columnJobcode = new global::System.Data.DataColumn("Jobcode", typeof(string), null, global::System.Data.MappingType.Element);
                 base.Columns.Add(this.columnJobcode);
-                this.columnDate = new global::System.Data.DataColumn("Date", typeof(global::System.DateTime), null, global::System.Data.MappingType.Element);
-                base.Columns.Add(this.columnDate);
                 this.columnHours = new global::System.Data.DataColumn("Hours", typeof(double), null, global::System.Data.MappingType.Element);
                 base.Columns.Add(this.columnHours);
                 this.columnUnits = new global::System.Data.DataColumn("Units", typeof(int), null, global::System.Data.MappingType.Element);
@@ -681,22 +667,6 @@ namespace TSheetReports {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "15.0.0.0")]
-            public System.DateTime Date {
-                get {
-                    try {
-                        return ((global::System.DateTime)(this[this.tableDataTable1.DateColumn]));
-                    }
-                    catch (global::System.InvalidCastException e) {
-                        throw new global::System.Data.StrongTypingException("The value for column \'Date\' in table \'DataTable1\' is DBNull.", e);
-                    }
-                }
-                set {
-                    this[this.tableDataTable1.DateColumn] = value;
-                }
-            }
-            
-            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "15.0.0.0")]
             public double Hours {
                 get {
                     try {
@@ -813,18 +783,6 @@ namespace TSheetReports {
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "15.0.0.0")]
             public void SetJobcodeNull() {
                 this[this.tableDataTable1.JobcodeColumn] = global::System.Convert.DBNull;
-            }
-            
-            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "15.0.0.0")]
-            public bool IsDateNull() {
-                return this.IsNull(this.tableDataTable1.DateColumn);
-            }
-            
-            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "15.0.0.0")]
-            public void SetDateNull() {
-                this[this.tableDataTable1.DateColumn] = global::System.Convert.DBNull;
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]

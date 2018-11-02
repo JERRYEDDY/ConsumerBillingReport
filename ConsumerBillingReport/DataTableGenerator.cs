@@ -22,11 +22,11 @@ namespace TSheetReports
                 ColumnName = "Jobcode",
                 DataType = typeof(string)
             });
-            cbeDataTable.Columns.Add(new DataColumn()
-            {
-                ColumnName = "Date",
-                DataType = typeof(DateTime)
-            });
+            //cbeDataTable.Columns.Add(new DataColumn()
+            //{
+            //    ColumnName = "Date",
+            //    DataType = typeof(DateTime)
+            //});
             cbeDataTable.Columns.Add(new DataColumn()
             {
                 ColumnName = "Hours",
