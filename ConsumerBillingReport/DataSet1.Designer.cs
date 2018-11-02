@@ -439,7 +439,7 @@ namespace TSheetReports {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "15.0.0.0")]
-            public DataTable1Row AddDataTable1Row(string ConsumerName, string Jobcode, string Date, double Hours, int Units, double _Ratio_, string WCode, double Rate, double Amount) {
+            public DataTable1Row AddDataTable1Row(string ConsumerName, string Jobcode, System.DateTime Date, double Hours, int Units, double _Ratio_, string WCode, double Rate, double Amount) {
                 DataTable1Row rowDataTable1Row = ((DataTable1Row)(this.NewRow()));
                 object[] columnValuesArray = new object[] {
                         ConsumerName,
@@ -491,7 +491,7 @@ namespace TSheetReports {
                 base.Columns.Add(this.columnConsumerName);
                 this.columnJobcode = new global::System.Data.DataColumn("Jobcode", typeof(string), null, global::System.Data.MappingType.Element);
                 base.Columns.Add(this.columnJobcode);
-                this.columnDate = new global::System.Data.DataColumn("Date", typeof(string), null, global::System.Data.MappingType.Element);
+                this.columnDate = new global::System.Data.DataColumn("Date", typeof(global::System.DateTime), null, global::System.Data.MappingType.Element);
                 base.Columns.Add(this.columnDate);
                 this.columnHours = new global::System.Data.DataColumn("Hours", typeof(double), null, global::System.Data.MappingType.Element);
                 base.Columns.Add(this.columnHours);
@@ -681,10 +681,10 @@ namespace TSheetReports {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "15.0.0.0")]
-            public string Date {
+            public System.DateTime Date {
                 get {
                     try {
-                        return ((string)(this[this.tableDataTable1.DateColumn]));
+                        return ((global::System.DateTime)(this[this.tableDataTable1.DateColumn]));
                     }
                     catch (global::System.InvalidCastException e) {
                         throw new global::System.Data.StrongTypingException("The value for column \'Date\' in table \'DataTable1\' is DBNull.", e);

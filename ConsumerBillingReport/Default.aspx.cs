@@ -4,6 +4,7 @@ using System.Web.UI;
 using Newtonsoft.Json.Linq;
 using TSheets;
 using System.Data;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using CrystalDecisions.CrystalReports.Engine;
@@ -65,7 +66,7 @@ namespace TSheetReports
             DataTable dataTable1 = ConsumerBillingReportSummary(sDate, eDate);
             
             //Sort datatable
-            dataTable1.DefaultView.Sort = "ConsumerName, Jobcode";
+            dataTable1.DefaultView.Sort = "ConsumerName, Jobcode, Date";
             dataTable1 = dataTable1.DefaultView.ToTable();
 
             DataSet1 ds = new DataSet1();
@@ -295,7 +296,9 @@ namespace TSheetReports
 
                     foreach (KeyValuePair<string, Dictionary<string, Total>> dates in userObject.Value.Dates)
                     {
-                        string date = dates.Key;
+                        string dateString = dates.Key;
+                        DateTime.TryParseExact(dateString, "yyyy-MM-dd", CultureInfo.InvariantCulture, DateTimeStyles.None, out var parsedDateTime);
+
                         foreach (KeyValuePair<string, Total> dateTotals in dates.Value)
                         {
                             var jobcodes = pbjReportObject.SupplementalData.Jobcodes;
@@ -310,7 +313,7 @@ namespace TSheetReports
                                 double hours = utility.DurationToHours(dateTotals.Value.TotalReSeconds);
                                 int units = utility.DurationToUnits(dateTotals.Value.TotalReSeconds);
 
-                                string logEntry = $"{consumer},{jc.Name},{date},{hours},{units}";
+                                string logEntry = $"{consumer},{jc.Name},{parsedDateTime:MM-dd-yyyy},{hours},{units}";
                                 log.Info(logEntry);
 
                                 RateCodeEntry rateEntry = rateEntries.Find(c => (c.RateId == rateId) && (communityPercentage >= c.Lower) && (communityPercentage <= c.Upper));
@@ -318,7 +321,7 @@ namespace TSheetReports
                                 double percentage = ratio * 100;
                                 double amount = units * rateEntry.BillRate;
 
-                                cbeTable.Rows.Add(consumer, jc.Name, sDate.DateTime, hours, units, percentage, rateEntry.WCode, rateEntry.BillRate, amount);
+                                cbeTable.Rows.Add(consumer, jc.Name, parsedDateTime.ToString("MM-dd-yyyy"), hours, units, percentage, rateEntry.WCode, rateEntry.BillRate, amount);
                             }
                         }
                     }
