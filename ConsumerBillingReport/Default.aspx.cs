@@ -46,6 +46,36 @@ namespace TSheetReports
                 _connection = new ConnectionInfo(_baseUri, _clientId, _redirectUri, _clientSecret);
 
                 AuthenticateWithManualToken();
+
+                DataTable cbeTable = DataTableGenerator.ConsumerBillingEntries();
+                cbeTable.Rows.Add("Mr., Jones", "1:3F_1: 1C_D", 5.8833333, 23, 32.2374429223744, "W5950", 5.58, 128.34);
+                cbeTable.Rows.Add("Mr., Jones", "1:3F_1: 1C_D", 2.8, 11, 15.3424657534247, "W5950", 5.58, 61.38);
+                cbeTable.Rows.Add("Mr., Jones", "1:1C_1:3F_D", 3.33333333333333, 13, 18.2648401826484, "W5950", 5.58, 72.54);
+                cbeTable.Rows.Add("Mr., Jones", "1:3F_1: 1C_D", 6.23333333333333, 24, 34.1552511415525, "W5950", 5.58, 133.92);
+
+                var newDT = cbeTable.AsEnumerable()
+                    .GroupBy(r => new
+                        {
+                            ConsumerName = r["ConsumerName"],
+                            Jobcode = r["Jobcode"],
+                            WCode = r["WCode"],
+                            Rate = r["Rate"]
+                        })
+                    .Select(g =>
+                    {
+                        var row = cbeTable.NewRow();
+                        row["ConsumerName"] = g.Key.ConsumerName;
+                        row["Jobcode"] = g.Key.Jobcode;
+                        row["Hours"] = g.Sum(x => x.Field<double>("Hours"));
+                        row["Units"] = g.Sum(x => x.Field<int>("Units"));
+                        row["Ratio%"] = g.Sum(x => x.Field<double>("Ratio%"));
+                        row["WCode"] = g.Key.WCode;
+                        row["Rate"] = g.Key.Rate;
+                        row["Amount"] = g.Sum(x => x.Field<double>("Amount"));
+                        return row;
+
+                    })
+                    .CopyToDataTable();
             }
             catch (Exception ex)
             {
@@ -64,8 +94,6 @@ namespace TSheetReports
             crystalReport.Load(Server.MapPath("CrystalReport2.rpt"));
 
             DataTable dataTable1 = ConsumerBillingReportSummary(sDate, eDate);
-
-
 
 
             //Sort datatable
