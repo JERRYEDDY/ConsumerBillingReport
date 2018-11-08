@@ -7,7 +7,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace TSheetReports {
+namespace ConsumerBillingReports {
     
     
     public partial class _Default {

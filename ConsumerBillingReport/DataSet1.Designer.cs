@@ -10,7 +10,7 @@
 
 #pragma warning disable 1591
 
-namespace TSheetReports {
+namespace ConsumerBillingReports {
     
     
     /// <summary>
@@ -287,7 +287,7 @@ namespace TSheetReports {
             
             private global::System.Data.DataColumn columnUnits;
             
-            private global::System.Data.DataColumn _columnRatio_;
+            private global::System.Data.DataColumn columnRatio;
             
             private global::System.Data.DataColumn columnWCode;
             
@@ -362,9 +362,9 @@ namespace TSheetReports {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "15.0.0.0")]
-            public global::System.Data.DataColumn _Ratio_Column {
+            public global::System.Data.DataColumn RatioColumn {
                 get {
-                    return this._columnRatio_;
+                    return this.columnRatio;
                 }
             }
             
@@ -429,14 +429,14 @@ namespace TSheetReports {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "15.0.0.0")]
-            public DataTable1Row AddDataTable1Row(string ConsumerName, string Jobcode, double Hours, int Units, double _Ratio_, string WCode, double Rate, double Amount) {
+            public DataTable1Row AddDataTable1Row(string ConsumerName, string Jobcode, double Hours, int Units, double Ratio, string WCode, double Rate, double Amount) {
                 DataTable1Row rowDataTable1Row = ((DataTable1Row)(this.NewRow()));
                 object[] columnValuesArray = new object[] {
                         ConsumerName,
                         Jobcode,
                         Hours,
                         Units,
-                        _Ratio_,
+                        Ratio,
                         WCode,
                         Rate,
                         Amount};
@@ -466,7 +466,7 @@ namespace TSheetReports {
                 this.columnJobcode = base.Columns["Jobcode"];
                 this.columnHours = base.Columns["Hours"];
                 this.columnUnits = base.Columns["Units"];
-                this._columnRatio_ = base.Columns["Ratio%"];
+                this.columnRatio = base.Columns["Ratio"];
                 this.columnWCode = base.Columns["WCode"];
                 this.columnRate = base.Columns["Rate"];
                 this.columnAmount = base.Columns["Amount"];
@@ -483,10 +483,8 @@ namespace TSheetReports {
                 base.Columns.Add(this.columnHours);
                 this.columnUnits = new global::System.Data.DataColumn("Units", typeof(int), null, global::System.Data.MappingType.Element);
                 base.Columns.Add(this.columnUnits);
-                this._columnRatio_ = new global::System.Data.DataColumn("Ratio%", typeof(double), null, global::System.Data.MappingType.Element);
-                this._columnRatio_.ExtendedProperties.Add("Generator_ColumnVarNameInTable", "_columnRatio_");
-                this._columnRatio_.ExtendedProperties.Add("Generator_UserColumnName", "Ratio%");
-                base.Columns.Add(this._columnRatio_);
+                this.columnRatio = new global::System.Data.DataColumn("Ratio", typeof(double), null, global::System.Data.MappingType.Element);
+                base.Columns.Add(this.columnRatio);
                 this.columnWCode = new global::System.Data.DataColumn("WCode", typeof(string), null, global::System.Data.MappingType.Element);
                 base.Columns.Add(this.columnWCode);
                 this.columnRate = new global::System.Data.DataColumn("Rate", typeof(double), null, global::System.Data.MappingType.Element);
@@ -699,17 +697,17 @@ namespace TSheetReports {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "15.0.0.0")]
-            public double _Ratio_ {
+            public double Ratio {
                 get {
                     try {
-                        return ((double)(this[this.tableDataTable1._Ratio_Column]));
+                        return ((double)(this[this.tableDataTable1.RatioColumn]));
                     }
                     catch (global::System.InvalidCastException e) {
-                        throw new global::System.Data.StrongTypingException("The value for column \'Ratio%\' in table \'DataTable1\' is DBNull.", e);
+                        throw new global::System.Data.StrongTypingException("The value for column \'Ratio\' in table \'DataTable1\' is DBNull.", e);
                     }
                 }
                 set {
-                    this[this.tableDataTable1._Ratio_Column] = value;
+                    this[this.tableDataTable1.RatioColumn] = value;
                 }
             }
             
@@ -811,14 +809,14 @@ namespace TSheetReports {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "15.0.0.0")]
-            public bool Is_Ratio_Null() {
-                return this.IsNull(this.tableDataTable1._Ratio_Column);
+            public bool IsRatioNull() {
+                return this.IsNull(this.tableDataTable1.RatioColumn);
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "15.0.0.0")]
-            public void Set_Ratio_Null() {
-                this[this.tableDataTable1._Ratio_Column] = global::System.Convert.DBNull;
+            public void SetRatioNull() {
+                this[this.tableDataTable1.RatioColumn] = global::System.Convert.DBNull;
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]

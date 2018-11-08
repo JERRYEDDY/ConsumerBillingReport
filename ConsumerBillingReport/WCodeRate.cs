@@ -4,7 +4,7 @@ using System.Data;
 using System.Linq;
 using System.Web;
 
-namespace TSheetReports
+namespace ConsumerBillingReports
 {
     public class WCodeRate
     {

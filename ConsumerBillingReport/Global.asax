@@ -1,1 +1,1 @@
-﻿<%@ Application Codebehind="Global.asax.cs" Inherits="TSheetReports.Global" Language="C#" %>
+﻿<%@ Application Codebehind="Global.asax.cs" Inherits="ConsumerBillingReports.Global" Language="C#" %>

@@ -1,18 +1,8 @@
-﻿namespace TSheetReports
-{
-}
-
-namespace TSheetReports
+﻿namespace ConsumerBillingReports
 {
 
 
     public partial class DataSet1
     {
-    }
-}
-namespace TSheetReports {
-    
-    
-    public partial class DataSet1 {
     }
 }

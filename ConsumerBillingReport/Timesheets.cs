@@ -10,7 +10,7 @@ using System.Globalization;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 
-namespace TSheetReports
+namespace ConsumerBillingReports
 {
     public partial class Timesheets
     {
@@ -302,12 +302,12 @@ namespace TSheetReports
 
     public partial class Timesheets
     {
-        public static Timesheets FromJson(string json) => JsonConvert.DeserializeObject<Timesheets>(json, TSheetReports.Converter.Settings);
+        public static Timesheets FromJson(string json) => JsonConvert.DeserializeObject<Timesheets>(json, Converter.Settings);
     }
 
     public static class Serialize
     {
-        public static string ToJson(this Timesheets self) => JsonConvert.SerializeObject(self, TSheetReports.Converter.Settings);
+        public static string ToJson(this Timesheets self) => JsonConvert.SerializeObject(self, Converter.Settings);
     }
 
     internal static class Converter

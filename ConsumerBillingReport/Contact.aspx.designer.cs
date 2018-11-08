@@ -7,7 +7,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace TSheetReports
+namespace ConsumerBillingReports
 {
 
 

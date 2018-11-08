@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace TSheetReports {
+namespace ConsumerBillingReports {
     using System;
     using System.ComponentModel;
     using CrystalDecisions.Shared;
@@ -41,7 +41,7 @@ namespace TSheetReports {
         
         public override string FullResourceName {
             get {
-                return "TSheetReports.CrystalReport1.rpt";
+                return "ConsumerBillingReports.CrystalReport1.rpt";
             }
             set {
                 // Do nothing

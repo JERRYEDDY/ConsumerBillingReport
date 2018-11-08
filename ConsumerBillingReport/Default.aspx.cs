@@ -9,22 +9,20 @@ using System.IO;
 using System.Linq;
 using CrystalDecisions.CrystalReports.Engine;
 using CrystalDecisions.Web;
-using log4net;
 using Newtonsoft.Json;
 using PayrollByJobCodeReport;
 using PBJReport;
 
-namespace TSheetReports
+
+namespace ConsumerBillingReports
 {
     public partial class _Default : Page
     {
-        private static readonly ILog log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+        private static NLog.Logger logger = NLog.LogManager.GetCurrentClassLogger();
 
         private static string _baseUri = "https://rest.tsheets.com/api/v1";
-
         private static ConnectionInfo _connection;
         private static IOAuth2 _authProvider;
-
         private static string _clientId;
         private static string _redirectUri;
         private static string _clientSecret;
@@ -32,7 +30,7 @@ namespace TSheetReports
 
         protected void Page_Load(object sender, EventArgs e)
         {
-            log.Info("Hello logging world!");
+            logger.Info("Hello NLog World");
 
             try
             {
@@ -47,39 +45,38 @@ namespace TSheetReports
 
                 AuthenticateWithManualToken();
 
-                DataTable cbeTable = DataTableGenerator.ConsumerBillingEntries();
-                cbeTable.Rows.Add("Mr., Jones", "1:3F_1: 1C_D", 5.8833333, 23, 32.2374429223744, "W5950", 5.58, 128.34);
-                cbeTable.Rows.Add("Mr., Jones", "1:3F_1: 1C_D", 2.8, 11, 15.3424657534247, "W5950", 5.58, 61.38);
-                cbeTable.Rows.Add("Mr., Jones", "1:1C_1:3F_D", 3.33333333333333, 13, 18.2648401826484, "W5950", 5.58, 72.54);
-                cbeTable.Rows.Add("Mr., Jones", "1:3F_1: 1C_D", 6.23333333333333, 24, 34.1552511415525, "W5950", 5.58, 133.92);
+                //DataTable cbeTable = DataTableGenerator.ConsumerBillingEntries();
+                //cbeTable.Rows.Add("Mr., Jones", "1:3F_1: 1C_D", 5.8833333, 23, 32.2374429223744, "W5950", 5.58, 128.34);
+                //cbeTable.Rows.Add("Mr., Jones", "1:3F_1: 1C_D", 2.8, 11, 15.3424657534247, "W5950", 5.58, 61.38);
+                //cbeTable.Rows.Add("Mr., Jones", "1:1C_1:3F_D", 3.33333333333333, 13, 18.2648401826484, "W5950", 5.58, 72.54);
+                //cbeTable.Rows.Add("Mr., Jones", "1:3F_1: 1C_D", 6.23333333333333, 24, 34.1552511415525, "W5950", 5.58, 133.92);
 
-                var newDT = cbeTable.AsEnumerable()
-                    .GroupBy(r => new
-                        {
-                            ConsumerName = r["ConsumerName"],
-                            Jobcode = r["Jobcode"],
-                            WCode = r["WCode"],
-                            Rate = r["Rate"]
-                        })
-                    .Select(g =>
-                    {
-                        var row = cbeTable.NewRow();
-                        row["ConsumerName"] = g.Key.ConsumerName;
-                        row["Jobcode"] = g.Key.Jobcode;
-                        row["Hours"] = g.Sum(x => x.Field<double>("Hours"));
-                        row["Units"] = g.Sum(x => x.Field<int>("Units"));
-                        row["Ratio%"] = g.Sum(x => x.Field<double>("Ratio%"));
-                        row["WCode"] = g.Key.WCode;
-                        row["Rate"] = g.Key.Rate;
-                        row["Amount"] = g.Sum(x => x.Field<double>("Amount"));
-                        return row;
-
-                    })
-                    .CopyToDataTable();
+                //var newDt = cbeTable.AsEnumerable()
+                //    .GroupBy(r => new
+                //        {
+                //            ConsumerName = r["ConsumerName"],
+                //            Jobcode = r["Jobcode"],
+                //            WCode = r["WCode"],
+                //            Rate = r["Rate"]
+                //        })
+                //    .Select(g =>
+                //    {
+                //        var row = cbeTable.NewRow();
+                //        row["ConsumerName"] = g.Key.ConsumerName;
+                //        row["Jobcode"] = g.Key.Jobcode;
+                //        row["Hours"] = g.Sum(x => x.Field<double>("Hours"));
+                //        row["Units"] = g.Sum(x => x.Field<int>("Units"));
+                //        row["Ratio"] = g.Sum(x => x.Field<double>("Ratio"));
+                //        row["WCode"] = g.Key.WCode;
+                //        row["Rate"] = g.Key.Rate;
+                //        row["Amount"] = g.Sum(x => x.Field<double>("Amount"));
+                //        return row;
+                //    })
+                //    .CopyToDataTable();
             }
             catch (Exception ex)
             {
-                log.Error(ex);
+                logger.Error(ex);
             }
         }
 
@@ -91,10 +88,9 @@ namespace TSheetReports
             DateTimeOffset eDate = ut.FromString(txtEndDate.Text);
 
             ReportDocument crystalReport = new ReportDocument();
-            crystalReport.Load(Server.MapPath("CrystalReport2.rpt"));
+            crystalReport.Load(Server.MapPath("CrystalReport3.rpt"));
 
             DataTable dataTable1 = ConsumerBillingReportSummary(sDate, eDate);
-
 
             //Sort datatable
             dataTable1.DefaultView.Sort = "ConsumerName, Jobcode";
@@ -217,7 +213,7 @@ namespace TSheetReports
 
                             string logEntry = $"Consumer: {consumer} TotalReSeconds: {totals.Value.TotalReSeconds} overSeconds: {overSeconds} roundedSeconds: {roundedSeconds} roundedHours: {roundedHours} ";
 
-                            log.Info(logEntry);
+                            logger.Info(logEntry);
 
                             double ratio = (double)totals.Value.TotalReSeconds / totalHours;
                             double percentage = ratio * 100;
@@ -242,7 +238,7 @@ namespace TSheetReports
                                 int units = utility.DurationToUnits(dateTotals.Value.TotalReSeconds);
                                 string logEntry = $"{consumer},{jc.Name},{date},{hours},{units}";
 
-                                log.Info(logEntry);
+                                logger.Info(logEntry);
                             }
                         }
                     }
@@ -263,7 +259,7 @@ namespace TSheetReports
             reportOptions.data.end_date = endDate;
 
             var payrollByJobcodeData = tsheetsApi.GetReport(ReportType.PayrollByJobcode, reportOptions.ToString());
-            var payrollByJobcode = PayrollByJobcode.FromJson(payrollByJobcodeData);
+            //var payrollByJobcode = PayrollByJobcode.FromJson(payrollByJobcodeData);
 
             PayrollByJobcode pbj = new PayrollByJobcode();
             DataTable cbeTable = DataTableGenerator.ConsumerBillingEntries();
@@ -278,12 +274,14 @@ namespace TSheetReports
                 {
                     string consumer = user.FirstName + ", " + user.LastName;
 
+                    //Total the hours by Employee so we can calculate the Facility/Community ratio
                     long totalHours = 0;
                     foreach (KeyValuePair<string, Total> totals in userObject.Value.Totals)
                     {
                         totalHours += totals.Value.TotalReSeconds;
                     }
 
+                    //Calculate the Community percentage ratio
                     double communityPercentage = 0.00;
                     foreach (KeyValuePair<string, Total> totals in userObject.Value.Totals)
                     {
@@ -310,16 +308,16 @@ namespace TSheetReports
                             long roundedSeconds = totals.Value.TotalReSeconds - overSeconds;
                             double roundedHours = utility.DurationToHours(roundedSeconds);
 
-                            double hours = utility.DurationToHours(totals.Value.TotalReSeconds);
-                            int units = utility.DurationToUnits(totals.Value.TotalReSeconds);
+                            //double hours = utility.DurationToHours(totals.Value.TotalReSeconds);
+                            //int units = utility.DurationToUnits(totals.Value.TotalReSeconds);
 
                             string logEntry = $"Consumer: {consumer} TotalReSeconds: {totals.Value.TotalReSeconds} overSeconds: {overSeconds} roundedSeconds: {roundedSeconds} roundedHours: {roundedHours} ";
-                            log.Info(logEntry);
+                            logger.Info(logEntry);
                             
                             RateCodeEntry rateEntry = rateEntries.Find(c => (c.RateId == rateId) && (communityPercentage >= c.Lower) && (communityPercentage <= c.Upper));
                             double ratio = (double)totals.Value.TotalReSeconds / totalHours;
-                            double percentage = ratio * 100;
-                            double amount = units * rateEntry.BillRate;
+                            //double percentage = ratio * 100;
+                            //double amount = units * rateEntry.BillRate;
 
                             //cbeTable.Rows.Add(consumer, jc.Name, sDate.DateTime, hours, units, percentage, rateEntry.WCode, rateEntry.BillRate, amount);
                         }
@@ -337,15 +335,15 @@ namespace TSheetReports
                             {
                                 string rateId = jc.Name[10].ToString(); //RateId A,B,C,D,E,F
 
-                                long overSeconds = dateTotals.Value.TotalReSeconds % 900;
-                                long roundedSeconds = dateTotals.Value.TotalReSeconds - overSeconds;
-                                double roundedHours = utility.DurationToHours(roundedSeconds);
+                                //long overSeconds = dateTotals.Value.TotalReSeconds % 900;
+                                //long roundedSeconds = dateTotals.Value.TotalReSeconds - overSeconds;
+                                //double roundedHours = utility.DurationToHours(roundedSeconds);
 
                                 double hours = utility.DurationToHours(dateTotals.Value.TotalReSeconds);
                                 int units = utility.DurationToUnits(dateTotals.Value.TotalReSeconds);
 
                                 string logEntry = $"{consumer},{jc.Name},{parsedDateTime:MM-dd-yyyy},{hours},{units}";
-                                log.Info(logEntry);
+                                logger.Info(logEntry);
 
                                 RateCodeEntry rateEntry = rateEntries.Find(c => (c.RateId == rateId) && (communityPercentage >= c.Lower) && (communityPercentage <= c.Upper));
                                 double ratio = (double)dateTotals.Value.TotalReSeconds / totalHours;
@@ -361,12 +359,12 @@ namespace TSheetReports
             return cbeTable;
         }
 
-        public RateCodeEntry FindRate(string rateId, double percent)
-        {
-            List<RateCodeEntry> rateEntries = OpenRateCodeTableFileAsList(Server.MapPath("~/App_Data/RateCodeTable.csv"), 1);
-            RateCodeEntry rateEntry = rateEntries.Find(c => (c.RateId == rateId) && (percent >= c.Lower) && (percent <= c.Upper));
-            return rateEntry;
-        }
+        //public RateCodeEntry FindRate(string rateId, double percent)
+        //{
+        //    List<RateCodeEntry> rateEntries = OpenRateCodeTableFileAsList(Server.MapPath("~/App_Data/RateCodeTable.csv"), 1);
+        //    RateCodeEntry rateEntry = rateEntries.Find(c => (c.RateId == rateId) && (percent >= c.Lower) && (percent <= c.Upper));
+        //    return rateEntry;
+        //}
 
         public List<RateCodeEntry> OpenRateCodeTableFileAsList(string fileName, int firstLineIsHeader)
         {
@@ -376,26 +374,6 @@ namespace TSheetReports
                 .ToList();
 
             return entries;
-        }
-
-        public static DataTable ObjectToData(object o)
-        {
-            DataTable dt = new DataTable("OutputData");
-
-            DataRow dr = dt.NewRow();
-            dt.Rows.Add(dr);
-
-            o.GetType().GetProperties().ToList().ForEach(f =>
-            {
-                try
-                {
-                    f.GetValue(o, null);
-                    dt.Columns.Add(f.Name, f.PropertyType);
-                    dt.Rows[0][f.Name] = f.GetValue(o, null);
-                }
-                catch { }
-            });
-            return dt;
         }
     }
 }

@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Linq;
-using System.Web;
+﻿using System.Data;
 
-namespace TSheetReports
+namespace ConsumerBillingReports
 {
     public class DataTableGenerator
     {
@@ -22,11 +18,6 @@ namespace TSheetReports
                 ColumnName = "Jobcode",
                 DataType = typeof(string)
             });
-            //cbeDataTable.Columns.Add(new DataColumn()
-            //{
-            //    ColumnName = "Date",
-            //    DataType = typeof(DateTime)
-            //});
             cbeDataTable.Columns.Add(new DataColumn()
             {
                 ColumnName = "Hours",
@@ -39,7 +30,7 @@ namespace TSheetReports
             });
             cbeDataTable.Columns.Add(new DataColumn()
             {
-                ColumnName = "Ratio%",
+                ColumnName = "Ratio",
                 DataType = typeof(double)
             });
             cbeDataTable.Columns.Add(new DataColumn()
