@@ -302,7 +302,7 @@ namespace ConsumerBillingReports
                         var jobcodes = pbjReportObject.SupplementalData.Jobcodes;
                         if (jobcodes.TryGetValue(totals.Value.JobcodeId.ToString(), out PBJReport.Jobcode jc))
                         {
-                            string rateId = jc.Name[10].ToString(); //RateId A,B,C,D,E,F
+                            string rateId = jc.Name[12].ToString(); //RateId A,B,C,D,E,F
 
                             long overSeconds = totals.Value.TotalReSeconds % 900;
                             long roundedSeconds = totals.Value.TotalReSeconds - overSeconds;
@@ -333,7 +333,7 @@ namespace ConsumerBillingReports
                             var jobcodes = pbjReportObject.SupplementalData.Jobcodes;
                             if (jobcodes.TryGetValue(dateTotals.Value.JobcodeId.ToString(), out PBJReport.Jobcode jc))
                             {
-                                string rateId = jc.Name[10].ToString(); //RateId A,B,C,D,E,F
+                                string rateId = jc.Name[12].ToString(); //RateId A,B,C,D,E,F
 
                                 //long overSeconds = dateTotals.Value.TotalReSeconds % 900;
                                 //long roundedSeconds = dateTotals.Value.TotalReSeconds - overSeconds;
