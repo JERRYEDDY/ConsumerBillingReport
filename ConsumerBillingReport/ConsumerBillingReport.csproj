@@ -216,6 +216,8 @@
     <Content Include="DataSet1.xsc">
       <DependentUpon>DataSet1.xsd</DependentUpon>
     </Content>
+    <Content Include="App_Data\JobCodeRateTable.csv" />
+    <Content Include="App_Data\RateCodeTable.csv" />
     <None Include="DataSet1.xsd">
       <SubType>Designer</SubType>
       <Generator>MSDataSetGenerator</Generator>
@@ -351,7 +353,6 @@
     <Compile Include="WCodeRate.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="App_Data\" />
     <Folder Include="Controllers\" />
     <Folder Include="crystalreportviewers13\" />
   </ItemGroup>

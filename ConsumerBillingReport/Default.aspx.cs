@@ -288,7 +288,7 @@ namespace ConsumerBillingReports
                         var jobcodes = pbjReportObject.SupplementalData.Jobcodes;
                         if (jobcodes.TryGetValue(totals.Value.JobcodeId.ToString(), out PBJReport.Jobcode jc))
                         {
-                            if (jc.Name[3] == 'C') //Community Jobcode
+                            if (jc.Name[0] == 'C') //Community Jobcode
                             {
                                 double ratio = (double)totals.Value.TotalReSeconds / totalHours;
                                 double percentage = ratio * 100;
