@@ -6,7 +6,6 @@
 
 using System;
 using System.Collections.Generic;
-
 using System.Globalization;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
@@ -241,12 +240,12 @@ namespace PBJReport
 
     public partial class PayrollByJobcode
     {
-        public static PayrollByJobcode FromJson(string json) => JsonConvert.DeserializeObject<PayrollByJobcode>(json, PBJReport.Converter.Settings);
+        public static PayrollByJobcode FromJson(string json) => JsonConvert.DeserializeObject<PayrollByJobcode>(json, Converter.Settings);
     }
 
     public static class Serialize
     {
-        public static string ToJson(this PayrollByJobcode self) => JsonConvert.SerializeObject(self, PBJReport.Converter.Settings);
+        public static string ToJson(this PayrollByJobcode self) => JsonConvert.SerializeObject(self, Converter.Settings);
     }
 
     internal static class Converter

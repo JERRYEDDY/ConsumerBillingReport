@@ -7,7 +7,7 @@ using System.Web;
 namespace PayrollByJobCodeReport
 
 {
-    public class RateCodeEntry
+    public class RatecodeEntry
     {
         public string RateId { get; set; }
         public double Lower { get; set; }
@@ -15,22 +15,22 @@ namespace PayrollByJobCodeReport
         public string WCode { get; set; }
         public double BillRate { get; set; }
 
-        public RateCodeEntry() { }
+        public RatecodeEntry() { }
 
-        public RateCodeEntry(string rateId, double lower, double upper, string wcode, double billRate)
+        public RatecodeEntry(string rateId, double lower, double upper, string wCode, double billRate)
         {
             RateId = rateId;
             Lower = lower;
             Upper = upper;
-            WCode = wcode;
+            WCode = wCode;
             BillRate = billRate;
         }
 
-        public static RateCodeEntry FromCsv(string csvLine)
+        public static RatecodeEntry FromCsv(string csvLine)
         {
             string[] values = csvLine.Split(',');
 
-            RateCodeEntry rateCodeEntry = new RateCodeEntry
+            RatecodeEntry rateCodeEntry = new RatecodeEntry
             {
                 RateId = values[0],
                 Lower = Convert.ToDouble(values[1]),
