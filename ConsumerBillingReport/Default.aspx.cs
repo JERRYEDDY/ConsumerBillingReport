@@ -49,35 +49,6 @@ namespace ConsumerBillingReports
                 _connection = new ConnectionInfo(_baseUri, _clientId, _redirectUri, _clientSecret);
 
                 AuthenticateWithManualToken();
-
-                //DataTable cbeTable = DataTableGenerator.ConsumerBillingEntries();
-                //cbeTable.Rows.Add("Mr., Jones", "1:3F_1: 1C_D", 5.8833333, 23, 32.2374429223744, "W5950", 5.58, 128.34);
-                //cbeTable.Rows.Add("Mr., Jones", "1:3F_1: 1C_D", 2.8, 11, 15.3424657534247, "W5950", 5.58, 61.38);
-                //cbeTable.Rows.Add("Mr., Jones", "1:1C_1:3F_D", 3.33333333333333, 13, 18.2648401826484, "W5950", 5.58, 72.54);
-                //cbeTable.Rows.Add("Mr., Jones", "1:3F_1: 1C_D", 6.23333333333333, 24, 34.1552511415525, "W5950", 5.58, 133.92);
-
-                //var newDt = cbeTable.AsEnumerable()
-                //    .GroupBy(r => new
-                //        {
-                //            ConsumerName = r["ConsumerName"],
-                //            Jobcode = r["Jobcode"],
-                //            WCode = r["WCode"],
-                //            Rate = r["Rate"]
-                //        })
-                //    .Select(g =>
-                //    {
-                //        var row = cbeTable.NewRow();
-                //        row["ConsumerName"] = g.Key.ConsumerName;
-                //        row["Jobcode"] = g.Key.Jobcode;
-                //        row["Hours"] = g.Sum(x => x.Field<double>("Hours"));
-                //        row["Units"] = g.Sum(x => x.Field<int>("Units"));
-                //        row["Ratio"] = g.Sum(x => x.Field<double>("Ratio"));
-                //        row["WCode"] = g.Key.WCode;
-                //        row["Rate"] = g.Key.Rate;
-                //        row["Amount"] = g.Sum(x => x.Field<double>("Amount"));
-                //        return row;
-                //    })
-                //    .CopyToDataTable();
             }
             catch (Exception ex)
             {
@@ -151,142 +122,150 @@ namespace ConsumerBillingReports
 
         public DataTable ConsumerBillingReportSummary(DateTimeOffset sDate, DateTimeOffset eDate)
         {
-            var tsheetsApi = new RestClient(_connection, _authProvider);
-
-            string startDate = sDate.ToString(Yearmonthdayformat);
-            string endDate = eDate.ToString(Yearmonthdayformat);
-
-            dynamic reportOptions = new JObject();
-            reportOptions.data = new JObject();
-            reportOptions.data.start_date = startDate;
-            reportOptions.data.end_date = endDate;
-
-            var payrollByJobcodeData = tsheetsApi.GetReport(ReportType.PayrollByJobcode, reportOptions.ToString());
-            //var payrollByJobcode = PayrollByJobcode.FromJson(payrollByJobcodeData);
-
-            //PayrollByJobcode pbj = new PayrollByJobcode();
-            DataTable cbeTable = DataTableGenerator.ConsumerBillingEntries();
-            Utility utility = new Utility();
-
-            List<RatecodeEntry> rateEntries = OpenRateCodeTableFileAsList(Server.MapPath(Ratetablefilename), 1);
-
-            var pbjReportObject = JsonConvert.DeserializeObject<PayrollByJobcode>(payrollByJobcodeData);
-            foreach (KeyValuePair<string, ByUser> userObject in pbjReportObject.Results.PayrollByJobcodeReport.ByUser)
+            DataTable cbeTable = null;
+            DataTable mergedTable = null;
+            try
             {
-                if (pbjReportObject.SupplementalData.Users.TryGetValue(userObject.Key, out PBJReport.User user))
+                var tsheetsApi = new RestClient(_connection, _authProvider);
+
+                string startDate = sDate.ToString(Yearmonthdayformat);
+                string endDate = eDate.ToString(Yearmonthdayformat);
+
+                dynamic reportOptions = new JObject();
+                reportOptions.data = new JObject();
+                reportOptions.data.start_date = startDate;
+                reportOptions.data.end_date = endDate;
+
+                var payrollByJobcodeData = tsheetsApi.GetReport(ReportType.PayrollByJobcode, reportOptions.ToString());
+                //var payrollByJobcode = PayrollByJobcode.FromJson(payrollByJobcodeData);
+
+                //PayrollByJobcode pbj = new PayrollByJobcode();
+                cbeTable = DataTableGenerator.ConsumerBillingEntries();
+                Utility utility = new Utility();
+
+                List<RatecodeEntry> rateEntries = OpenRateCodeTableFileAsList(Server.MapPath(Ratetablefilename), 1);
+
+                var pbjReportObject = JsonConvert.DeserializeObject<PayrollByJobcode>(payrollByJobcodeData);
+                foreach (KeyValuePair<string, ByUser> userObject in pbjReportObject.Results.PayrollByJobcodeReport.ByUser)
                 {
-                    string consumer = user.FirstName + ", " + user.LastName;
-
-                    //Total the hours by Employee so we can calculate the Facility/Community ratio
-                    long totalHours = 0;
-                    foreach (KeyValuePair<string, Total> totals in userObject.Value.Totals)
+                    if (pbjReportObject.SupplementalData.Users.TryGetValue(userObject.Key, out PBJReport.User user))
                     {
-                        totalHours += totals.Value.TotalReSeconds;
-                    }
+                        string consumer = user.FirstName + ", " + user.LastName;
 
-                    //Calculate the Community percentage ratio
-                    double communityPercentage = 0.00;
-
-                    //Load Jobcodes information
-                    var jobcodes = pbjReportObject.SupplementalData.Jobcodes;  
-                    foreach (KeyValuePair<string, Total> totals in userObject.Value.Totals)
-                    {
-                        if (jobcodes.TryGetValue(totals.Value.JobcodeId.ToString(), out PBJReport.Jobcode jc))
+                        //Total the hours by Employee so we can calculate the Facility/Community ratio
+                        long totalHours = 0;
+                        foreach (KeyValuePair<string, Total> totals in userObject.Value.Totals)
                         {
-                            if (jc.Name[0] == Community) //Community Jobcode
+                            totalHours += totals.Value.TotalReSeconds;
+                        }
+
+                        //Calculate the Community percentage ratio
+                        double communityPercentage = 0.00;
+
+                        //Load Jobcodes information
+                        var jobcodes = pbjReportObject.SupplementalData.Jobcodes;  
+                        foreach (KeyValuePair<string, Total> totals in userObject.Value.Totals)
+                        {
+                            if (jobcodes.TryGetValue(totals.Value.JobcodeId.ToString(), out PBJReport.Jobcode jc))
                             {
-                                double ratio = (double)totals.Value.TotalReSeconds / totalHours;
-                                double percentage = ratio * 100;
-                                communityPercentage = percentage;
+                                if (jc.Name[0] == Community) //Community Jobcode
+                                {
+                                    double ratio = (double)totals.Value.TotalReSeconds / totalHours;
+                                    double percentage = ratio * 100;
+                                    communityPercentage = percentage;
+                                }
                             }
                         }
-                    }
 
-                    //var jobcodes = pbjReportObject.SupplementalData.Jobcodes;
-                    foreach (KeyValuePair<string, Total> totals in userObject.Value.Totals)
-                    {
-                        if (jobcodes.TryGetValue(totals.Value.JobcodeId.ToString(), out PBJReport.Jobcode jc))
+                        //var jobcodes = pbjReportObject.SupplementalData.Jobcodes;
+                        foreach (KeyValuePair<string, Total> totals in userObject.Value.Totals)
                         {
-                            string rateId = jc.Name[Rateidoffset].ToString(); //RateId A,B,C,D,E,F
-
-                            long overSeconds = totals.Value.TotalReSeconds % 900;
-                            long roundedSeconds = totals.Value.TotalReSeconds - overSeconds;
-                            double roundedHours = utility.DurationToHours(roundedSeconds);
-
-                            //double hours = utility.DurationToHours(totals.Value.TotalReSeconds);
-                            //int units = utility.DurationToUnits(totals.Value.TotalReSeconds);
-
-                            string logEntry = $"Consumer: {consumer} TotalReSeconds: {totals.Value.TotalReSeconds} overSeconds: {overSeconds} roundedSeconds: {roundedSeconds} roundedHours: {roundedHours} ";
-                            logger.Info(logEntry);
-                            
-                            RatecodeEntry rateEntry = rateEntries.Find(c => (c.RateId == rateId) && (communityPercentage >= c.Lower) && (communityPercentage <= c.Upper));
-                            //double ratio = (double)totals.Value.TotalReSeconds / totalHours;
-                            //double percentage = ratio * 100;
-                            //double amount = units * rateEntry.BillRate;
-
-                            //cbeTable.Rows.Add(consumer, jc.Name, sDate.DateTime, hours, units, percentage, rateEntry.WCode, rateEntry.BillRate, amount);
-                        }
-                    }
-
-                    foreach (KeyValuePair<string, Dictionary<string, Total>> dates in userObject.Value.Dates)
-                    {
-                        string dateString = dates.Key;
-                        DateTime.TryParseExact(dateString, Yearmonthdayformat, CultureInfo.InvariantCulture, DateTimeStyles.None, out var parsedDateTime);
-
-                        foreach (KeyValuePair<string, Total> dateTotals in dates.Value)
-                        {
-                            //var jobcodes = pbjReportObject.SupplementalData.Jobcodes;
-                            if (jobcodes.TryGetValue(dateTotals.Value.JobcodeId.ToString(), out PBJReport.Jobcode jc))
+                            if (jobcodes.TryGetValue(totals.Value.JobcodeId.ToString(), out PBJReport.Jobcode jc))
                             {
                                 string rateId = jc.Name[Rateidoffset].ToString(); //RateId A,B,C,D,E,F
 
-                                //long overSeconds = dateTotals.Value.TotalReSeconds % 900;
-                                //long roundedSeconds = dateTotals.Value.TotalReSeconds - overSeconds;
-                                //double roundedHours = utility.DurationToHours(roundedSeconds);
+                                long overSeconds = totals.Value.TotalReSeconds % 900;
+                                long roundedSeconds = totals.Value.TotalReSeconds - overSeconds;
+                                double roundedHours = utility.DurationToHours(roundedSeconds);
 
-                                double hours = utility.DurationToHours(dateTotals.Value.TotalReSeconds);
-                                int units = utility.DurationToUnits(dateTotals.Value.TotalReSeconds);
+                                //double hours = utility.DurationToHours(totals.Value.TotalReSeconds);
+                                //int units = utility.DurationToUnits(totals.Value.TotalReSeconds);
 
-                                string logEntry = $"{consumer},{jc.Name},{parsedDateTime:MM-dd-yyyy},{hours},{units}";
+                                string logEntry = $"Consumer: {consumer} TotalReSeconds: {totals.Value.TotalReSeconds} overSeconds: {overSeconds} roundedSeconds: {roundedSeconds} roundedHours: {roundedHours} ";
                                 logger.Info(logEntry);
-
+                                
                                 RatecodeEntry rateEntry = rateEntries.Find(c => (c.RateId == rateId) && (communityPercentage >= c.Lower) && (communityPercentage <= c.Upper));
-                                double ratio = (double)dateTotals.Value.TotalReSeconds / totalHours;
-                                double percentage = ratio * 100;
-                                double amount = units * rateEntry.BillRate;
+                                //double ratio = (double)totals.Value.TotalReSeconds / totalHours;
+                                //double percentage = ratio * 100;
+                                //double amount = units * rateEntry.BillRate;
 
-                                cbeTable.Rows.Add(consumer, jc.Name, hours, units, percentage, rateEntry.WCode, rateEntry.BillRate, amount);
+                                //cbeTable.Rows.Add(consumer, jc.Name, sDate.DateTime, hours, units, percentage, rateEntry.WCode, rateEntry.BillRate, amount);
+                            }
+                        }
+
+                        foreach (KeyValuePair<string, Dictionary<string, Total>> dates in userObject.Value.Dates)
+                        {
+                            string dateString = dates.Key;
+                            DateTime.TryParseExact(dateString, Yearmonthdayformat, CultureInfo.InvariantCulture, DateTimeStyles.None, out var parsedDateTime);
+
+                            foreach (KeyValuePair<string, Total> dateTotals in dates.Value)
+                            {
+                                //var jobcodes = pbjReportObject.SupplementalData.Jobcodes;
+                                if (jobcodes.TryGetValue(dateTotals.Value.JobcodeId.ToString(), out PBJReport.Jobcode jc))
+                                {
+                                    string rateId = jc.Name[Rateidoffset].ToString(); //RateId A,B,C,D,E,F
+
+                                    //long overSeconds = dateTotals.Value.TotalReSeconds % 900;
+                                    //long roundedSeconds = dateTotals.Value.TotalReSeconds - overSeconds;
+                                    //double roundedHours = utility.DurationToHours(roundedSeconds);
+
+                                    double hours = utility.DurationToHours(dateTotals.Value.TotalReSeconds);
+                                    int units = utility.DurationToUnits(dateTotals.Value.TotalReSeconds);
+
+                                    string logEntry = $"{consumer},{jc.Name},{parsedDateTime:MM-dd-yyyy},{hours},{units}";
+                                    logger.Info(logEntry);
+
+                                    RatecodeEntry rateEntry = rateEntries.Find(c => (c.RateId == rateId) && (communityPercentage >= c.Lower) && (communityPercentage <= c.Upper));
+                                    double ratio = (double)dateTotals.Value.TotalReSeconds / totalHours;
+                                    double percentage = ratio * 100;
+                                    double amount = units * rateEntry.BillRate;
+
+                                    cbeTable.Rows.Add(consumer, jc.Name, hours, units, percentage, rateEntry.WCode, rateEntry.BillRate, amount);
+                                }
                             }
                         }
                     }
                 }
+
+                mergedTable = cbeTable.AsEnumerable()
+                    .GroupBy(group => new
+                    {
+                        ConsumerName = group["ConsumerName"],
+                        Jobcode = group["Jobcode"],
+                        WCode = group["WCode"],
+                        Rate = group["Rate"]
+                    })
+                    .Select(select =>
+                    {
+                        var row = cbeTable.NewRow();
+                        row["ConsumerName"] = select.Key.ConsumerName;
+                        row["Jobcode"] = select.Key.Jobcode;
+                        row["Hours"] = select.Sum(x => x.Field<double>("Hours"));
+                        row["Units"] = select.Sum(x => x.Field<int>("Units"));
+                        row["Ratio"] = select.Sum(x => x.Field<double>("Ratio"));
+                        row["WCode"] = select.Key.WCode;
+                        row["Rate"] = select.Key.Rate;
+                        row["Amount"] = select.Sum(x => x.Field<double>("Amount"));
+                        return row;
+                    })
+                    .CopyToDataTable();
             }
-
-            var newTable = cbeTable.AsEnumerable()
-                .GroupBy(r => new
-                {
-                    ConsumerName = r["ConsumerName"],
-                    Jobcode = r["Jobcode"],
-                    WCode = r["WCode"],
-                    Rate = r["Rate"]
-                })
-                .Select(g =>
-                {
-                    var row = cbeTable.NewRow();
-                    row["ConsumerName"] = g.Key.ConsumerName;
-                    row["Jobcode"] = g.Key.Jobcode;
-                    row["Hours"] = g.Sum(x => x.Field<double>("Hours"));
-                    row["Units"] = g.Sum(x => x.Field<int>("Units"));
-                    row["Ratio"] = g.Sum(x => x.Field<double>("Ratio"));
-                    row["WCode"] = g.Key.WCode;
-                    row["Rate"] = g.Key.Rate;
-                    row["Amount"] = g.Sum(x => x.Field<double>("Amount"));
-                    return row;
-                })
-                .CopyToDataTable();
-
+            catch (Exception ex)
+            {
+                logger.Error(ex);
+            }
             //return cbeTable;
-            return newTable;
+            return mergedTable;
         }
 
         public List<RatecodeEntry> OpenRateCodeTableFileAsList(string fileName, int firstLineIsHeader)
