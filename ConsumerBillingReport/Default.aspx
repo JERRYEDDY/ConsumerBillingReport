@@ -15,9 +15,13 @@
         <asp:Label id="lblEndDate" AssociatedControlId="txtEndDate" Text=" End Date:" runat="server" > 
             <asp:TextBox ID="txtEndDate" runat="server"></asp:TextBox>  
             <ajaxToolkit:CalendarExtender ID="calEndDate" runat="server" TargetControlID="txtEndDate" Format="MM/dd/yyyy"></ajaxToolkit:CalendarExtender>  
-        </asp:Label>         
+        </asp:Label>      
+        
+
+        <asp:DropDownList ID="DropDownList1" runat="server"></asp:DropDownList>
 
         <asp:Button ID="SubmitButton" runat="server" Text="Submit" OnClick="SubmitButton_OnClick"/>
+
 
     </asp:Label>
     <div>  
