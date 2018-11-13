@@ -349,7 +349,6 @@
       <DependentUpon>ViewSwitcher.ascx</DependentUpon>
     </Compile>
     <Compile Include="Timesheets.cs" />
-    <Compile Include="WCodeRate.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Controllers\" />
