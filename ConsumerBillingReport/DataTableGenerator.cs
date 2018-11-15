@@ -48,6 +48,11 @@ namespace ConsumerBillingReports
                 ColumnName = "Amount",
                 DataType = typeof(double)
             });
+            cbeDataTable.Columns.Add(new DataColumn()
+            {
+                ColumnName = "Days",
+                DataType = typeof(int)
+            });
 
             return cbeDataTable;
         }

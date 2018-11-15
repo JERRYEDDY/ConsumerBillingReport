@@ -295,6 +295,8 @@ namespace ConsumerBillingReports {
             
             private global::System.Data.DataColumn columnAmount;
             
+            private global::System.Data.DataColumn columnDays;
+            
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "15.0.0.0")]
             public DataTable1DataTable() {
@@ -394,6 +396,14 @@ namespace ConsumerBillingReports {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "15.0.0.0")]
+            public global::System.Data.DataColumn DaysColumn {
+                get {
+                    return this.columnDays;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "15.0.0.0")]
             [global::System.ComponentModel.Browsable(false)]
             public int Count {
                 get {
@@ -429,7 +439,7 @@ namespace ConsumerBillingReports {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "15.0.0.0")]
-            public DataTable1Row AddDataTable1Row(string ConsumerName, string Jobcode, double Hours, int Units, double Ratio, string WCode, double Rate, double Amount) {
+            public DataTable1Row AddDataTable1Row(string ConsumerName, string Jobcode, double Hours, int Units, double Ratio, string WCode, double Rate, double Amount, string Days) {
                 DataTable1Row rowDataTable1Row = ((DataTable1Row)(this.NewRow()));
                 object[] columnValuesArray = new object[] {
                         ConsumerName,
@@ -439,7 +449,8 @@ namespace ConsumerBillingReports {
                         Ratio,
                         WCode,
                         Rate,
-                        Amount};
+                        Amount,
+                        Days};
                 rowDataTable1Row.ItemArray = columnValuesArray;
                 this.Rows.Add(rowDataTable1Row);
                 return rowDataTable1Row;
@@ -470,6 +481,7 @@ namespace ConsumerBillingReports {
                 this.columnWCode = base.Columns["WCode"];
                 this.columnRate = base.Columns["Rate"];
                 this.columnAmount = base.Columns["Amount"];
+                this.columnDays = base.Columns["Days"];
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
@@ -491,6 +503,8 @@ namespace ConsumerBillingReports {
                 base.Columns.Add(this.columnRate);
                 this.columnAmount = new global::System.Data.DataColumn("Amount", typeof(double), null, global::System.Data.MappingType.Element);
                 base.Columns.Add(this.columnAmount);
+                this.columnDays = new global::System.Data.DataColumn("Days", typeof(string), null, global::System.Data.MappingType.Element);
+                base.Columns.Add(this.columnDays);
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
@@ -761,6 +775,22 @@ namespace ConsumerBillingReports {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "15.0.0.0")]
+            public string Days {
+                get {
+                    try {
+                        return ((string)(this[this.tableDataTable1.DaysColumn]));
+                    }
+                    catch (global::System.InvalidCastException e) {
+                        throw new global::System.Data.StrongTypingException("The value for column \'Days\' in table \'DataTable1\' is DBNull.", e);
+                    }
+                }
+                set {
+                    this[this.tableDataTable1.DaysColumn] = value;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "15.0.0.0")]
             public bool IsConsumerNameNull() {
                 return this.IsNull(this.tableDataTable1.ConsumerNameColumn);
             }
@@ -853,6 +883,18 @@ namespace ConsumerBillingReports {
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "15.0.0.0")]
             public void SetAmountNull() {
                 this[this.tableDataTable1.AmountColumn] = global::System.Convert.DBNull;
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "15.0.0.0")]
+            public bool IsDaysNull() {
+                return this.IsNull(this.tableDataTable1.DaysColumn);
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "15.0.0.0")]
+            public void SetDaysNull() {
+                this[this.tableDataTable1.DaysColumn] = global::System.Convert.DBNull;
             }
         }
         

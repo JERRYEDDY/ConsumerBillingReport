@@ -7,22 +7,18 @@
     <script src='<%=ResolveUrl("~/crystalreportviewers13/js/crviewer/crv.js")%>' type="text/javascript"></script>
 
     <asp:Label class="jumbotron" runat="server">
+        <asp:Label id="lblStartDate" AssociatedControlId="ddlWeekOf" Text="Week of:" runat="server" >
+        <asp:DropDownList ID="ddlWeekOf" runat="server"></asp:DropDownList>           
 
-        <asp:Label id="lblStartDate" AssociatedControlId="txtStartDate" Text="Start Date:" runat="server" >
-            <asp:TextBox ID="txtStartDate" runat="server"></asp:TextBox>  
-            <ajaxToolkit:CalendarExtender ID="calStartDate" runat="server" TargetControlID="txtStartDate" Format="MM/dd/yyyy"></ajaxToolkit:CalendarExtender>  
+<%--            <asp:TextBox ID="txtStartDate" runat="server"></asp:TextBox>  
+            <ajaxToolkit:CalendarExtender ID="calStartDate" runat="server" TargetControlID="txtStartDate" Format="MM/dd/yyyy"></ajaxToolkit:CalendarExtender>  --%>
         </asp:Label>  
-        <asp:Label id="lblEndDate" AssociatedControlId="txtEndDate" Text=" End Date:" runat="server" > 
+<%--        <asp:Label id="lblEndDate" AssociatedControlId="txtEndDate" Text=" End Date:" runat="server" > 
             <asp:TextBox ID="txtEndDate" runat="server"></asp:TextBox>  
             <ajaxToolkit:CalendarExtender ID="calEndDate" runat="server" TargetControlID="txtEndDate" Format="MM/dd/yyyy"></ajaxToolkit:CalendarExtender>  
-        </asp:Label>      
-        
-
-        <asp:DropDownList ID="DropDownList1" runat="server"></asp:DropDownList>
+        </asp:Label>  --%>    
 
         <asp:Button ID="SubmitButton" runat="server" Text="Submit" OnClick="SubmitButton_OnClick"/>
-
-
     </asp:Label>
     <div>  
         <CR:CrystalReportViewer ID="CrystalReportViewer1" runat="server" AutoDataBind="true" ToolPanelView="None" HasToggleGroupTreeButton="False" HasToggleParameterPanelButton="False" />

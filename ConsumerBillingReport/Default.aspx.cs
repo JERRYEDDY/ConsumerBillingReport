@@ -12,6 +12,7 @@ using CrystalDecisions.Web;
 using Newtonsoft.Json;
 using PayrollByJobCodeReport;
 using PBJReport;
+using System.Web.UI.WebControls;
 
 namespace ConsumerBillingReports
 {
@@ -27,34 +28,40 @@ namespace ConsumerBillingReports
         private static string _clientSecret;
         private static string _manualToken;
 
-        public const int Rateidoffset = 12;
+        public const int RateIdOffset = 12;
         public const char Community = 'C';
-        public const string Yearmonthdayformat = "yyyy-MM-dd";
-        public const string Ratetablefilename = "~/App_Data/RatecodeTable.csv";
+        public const string YearMonthDayFormat = "yyyy-MM-dd";
+        public const string RateTableFilename = "~/App_Data/RatecodeTable.csv";
+        public const int WeeksOffset = 10;
 
         protected void Page_Load(object sender, EventArgs e)
         {
-            try
+            if (!IsPostBack)
             {
-                EnvironmentVariableTarget tgt = EnvironmentVariableTarget.Machine;
-                _clientId = Environment.GetEnvironmentVariable("TSHEETS_CLIENTID", tgt);
-                _clientSecret = Environment.GetEnvironmentVariable("TSHEETS_CLIENTSECRET", tgt);
-                _redirectUri = Environment.GetEnvironmentVariable("TSHEETS_REDIRECTURI", tgt);
-                _manualToken = Environment.GetEnvironmentVariable("TSHEETS_MANUALTOKEN", tgt);
+                try
+                {
+                    EnvironmentVariableTarget tgt = EnvironmentVariableTarget.Machine;
+                    _clientId = Environment.GetEnvironmentVariable("TSHEETS_CLIENTID", tgt);
+                    _clientSecret = Environment.GetEnvironmentVariable("TSHEETS_CLIENTSECRET", tgt);
+                    _redirectUri = Environment.GetEnvironmentVariable("TSHEETS_REDIRECTURI", tgt);
+                    _manualToken = Environment.GetEnvironmentVariable("TSHEETS_MANUALTOKEN", tgt);
 
-                // set up the ConnectionInfo object which tells the API how to connect to the server
-                _connection = new ConnectionInfo(_baseUri, _clientId, _redirectUri, _clientSecret);
+                    // set up the ConnectionInfo object which tells the API how to connect to the server
+                    _connection = new ConnectionInfo(_baseUri, _clientId, _redirectUri, _clientSecret);
 
-                AuthenticateWithManualToken();
+                    AuthenticateWithManualToken();
 
-                var weeks = FetchWeeks(2108);
-                DropDownList1.DataSource = weeks;
-                DropDownList1.DataBind();
+                    var weeks = GetWeeksList();
+                    ddlWeekOf.DataSource = weeks;
+                    ddlWeekOf.DataValueField = "Value";
+                    ddlWeekOf.DataTextField = "Text";
+                    ddlWeekOf.DataBind();
 
-            }
-            catch (Exception ex)
-            {
-                Logger.Error(ex);
+                }
+                catch (Exception ex)
+                {
+                    Logger.Error(ex);
+                }
             }
         }
 
@@ -63,8 +70,11 @@ namespace ConsumerBillingReports
             try
             {
                 Utility ut = new Utility();
-                DateTimeOffset sDate = ut.FromString(txtStartDate.Text);
-                DateTimeOffset eDate = ut.FromString(txtEndDate.Text);
+                string selectedWeekValue = ddlWeekOf.SelectedValue;
+                string[] selectedWeek = selectedWeekValue.Split(',');
+
+                DateTimeOffset sDate = ut.FromString(selectedWeek[0]);
+                DateTimeOffset eDate = ut.FromString(selectedWeek[1]);
 
                 ReportDocument crystalReport = new ReportDocument();
                 crystalReport.Load(Server.MapPath("CrystalReport3.rpt"));
@@ -74,8 +84,8 @@ namespace ConsumerBillingReports
                 DataSet1 ds = new DataSet1();
                 ds.Tables.Add(dataTable1);
                 crystalReport.SetDataSource(ds.Tables[1]);
-                crystalReport.SetParameterValue("Start", txtStartDate.Text);
-                crystalReport.SetParameterValue("End", txtEndDate.Text);
+                crystalReport.SetParameterValue("Start", sDate.ToString("MM/dd/yyyy"));
+                crystalReport.SetParameterValue("End", eDate.ToString("MM/dd/yyyy"));
 
                 CrystalReportViewer1.ReportSource = crystalReport;
                 CrystalReportViewer1.PrintMode = PrintMode.Pdf;
@@ -140,13 +150,13 @@ namespace ConsumerBillingReports
 
                 dynamic reportOptions = new JObject();
                 reportOptions.data = new JObject();
-                reportOptions.data.start_date = sDate.ToString(Yearmonthdayformat); 
-                reportOptions.data.end_date = eDate.ToString(Yearmonthdayformat);
+                reportOptions.data.start_date = sDate.ToString(YearMonthDayFormat); 
+                reportOptions.data.end_date = eDate.ToString(YearMonthDayFormat);
 
                 var payrollByJobcodeData = tsheetsApi.GetReport(ReportType.PayrollByJobcode, reportOptions.ToString());
                 cbeTable = DataTableGenerator.ConsumerBillingEntries();
 
-                List<RatecodeEntry> rateEntries = OpenRateCodeTableFileAsList(Server.MapPath(Ratetablefilename), 1);
+                List<RatecodeEntry> rateEntries = OpenRateCodeTableFileAsList(Server.MapPath(RateTableFilename), 1);
 
                 var pbjReportObject = JsonConvert.DeserializeObject<PayrollByJobcode>(payrollByJobcodeData);
                 foreach (KeyValuePair<string, ByUser> userObject in pbjReportObject.Results.PayrollByJobcodeReport.ByUser)
@@ -183,27 +193,49 @@ namespace ConsumerBillingReports
                         }
                     }
 
+
                     Utility utility = new Utility();
+                    int dayCount = 0;
                     foreach (KeyValuePair<string, Dictionary<string, Total>> dates in userObject.Value.Dates)
                     {
                         string dateString = dates.Key;
-                        DateTime.TryParseExact(dateString, Yearmonthdayformat, CultureInfo.InvariantCulture, DateTimeStyles.None, out var parsedDateTime);
+                        DateTime.TryParseExact(dateString, YearMonthDayFormat, CultureInfo.InvariantCulture, DateTimeStyles.None, out var parsedDateTime);
+
+                        dayCount++;
 
                         foreach (KeyValuePair<string, Total> dateTotals in dates.Value)
                         {
                             if (jobcodes.TryGetValue(dateTotals.Value.JobcodeId.ToString(), out PBJReport.Jobcode jc))
                             {
-                                string rateId = jc.Name[Rateidoffset].ToString(); //RateId A,B,C,D,E,F
+                                if (jc.Type.CompareTo("regular") == 0) //Not pto, paid_break, or unpaid_break
+                                {
+                                    string rateId = jc.Name[RateIdOffset].ToString(); //RateId A,B,C,D,E,F
 
-                                double hours = utility.DurationToHours(dateTotals.Value.TotalReSeconds);
-                                int units = utility.DurationToUnits(dateTotals.Value.TotalReSeconds);
+                                    double hours = utility.DurationToHours(dateTotals.Value.TotalReSeconds);
+                                    int units = utility.DurationToUnits(dateTotals.Value.TotalReSeconds);
 
-                                RatecodeEntry rateEntry = rateEntries.Find(c => (c.RateId == rateId) && (communityPercentage >= c.Lower) && (communityPercentage <= c.Upper));
-                                double ratio = (double) dateTotals.Value.TotalReSeconds / totalHours;
-                                double percentage = ratio * 100;
-                                double amount = units * rateEntry.BillRate;
+                                    RatecodeEntry rateEntry = rateEntries.Find(c =>
+                                        (c.RateId == rateId) && (communityPercentage >= c.Lower) &&
+                                        (communityPercentage <= c.Upper));
+                                    double ratio = (double) dateTotals.Value.TotalReSeconds / totalHours;
+                                    double percentage = ratio * 100;
+                                    double amount = units * rateEntry.BillRate;
 
-                                cbeTable.Rows.Add(consumer, jc.Name, hours, units, percentage, rateEntry.WCode, rateEntry.BillRate, amount);
+                                    cbeTable.Rows.Add(consumer, jc.Name, hours, units, percentage, rateEntry.WCode,
+                                        rateEntry.BillRate, amount, dayCount);
+                                }
+                                else
+                                {
+                                    double hours = utility.DurationToHours(dateTotals.Value.TotalPtoSeconds);
+                                    int units = 0;
+                                    double percentage = 0;
+                                    string wCode = "   ";
+                                    double billRate = 0;
+                                    double amount = 0;
+
+                                    cbeTable.Rows.Add(consumer, jc.Name, hours, units, percentage, wCode,
+                                        billRate, amount, dayCount);
+                                }
                             }
                         }
                     }
@@ -271,21 +303,19 @@ namespace ConsumerBillingReports
 
             return entries;
         }
-        public List<string> FetchWeeks(int year)
+        public List<ListItem> GetWeeksList()
         {
-            List<string> weeks = new List<string>();
-            DateTime startDate = new DateTime(year, 1, 1);
-            int dow = (int) startDate.DayOfWeek;
-            int temp = (1 - dow);
-            startDate = startDate.AddDays(temp);
+            List<ListItem> weeks = new List<ListItem>();
+            DateTime startDate = DateTime.Today.AddDays(-(int)DateTime.Today.DayOfWeek);
             DateTime endDate = startDate.AddDays(6);
-            while (startDate.Year < 1 + year)
+            for (int i = 0; i < WeeksOffset; i++)
             {
-                weeks.Add($"{startDate:MMMM dd, yyyy}-{endDate:MMMM dd, yyyy}");
-                startDate = startDate.AddDays(7);
-                endDate = endDate.AddDays(7);
+                weeks.Add(new ListItem($"{startDate:MMM dd, yyyy} - {endDate:MMM dd, yyyy}",$"{startDate:MM/dd/yyyy},{endDate:MM/dd/yyyy}"));
+                startDate = startDate.AddDays(-7);
+                endDate = endDate.AddDays(-7);
             }
             return weeks;
         }
+
     }
 }
