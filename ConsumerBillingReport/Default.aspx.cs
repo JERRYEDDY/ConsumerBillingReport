@@ -56,7 +56,6 @@ namespace ConsumerBillingReports
                     ddlWeekOf.DataValueField = "Value";
                     ddlWeekOf.DataTextField = "Text";
                     ddlWeekOf.DataBind();
-
                 }
                 catch (Exception ex)
                 {
@@ -83,6 +82,7 @@ namespace ConsumerBillingReports
 
                 DataSet1 ds = new DataSet1();
                 ds.Tables.Add(dataTable1);
+
                 crystalReport.SetDataSource(ds.Tables[1]);
                 crystalReport.SetParameterValue("Start", sDate.ToString("MM/dd/yyyy"));
                 crystalReport.SetParameterValue("End", eDate.ToString("MM/dd/yyyy"));
@@ -193,21 +193,17 @@ namespace ConsumerBillingReports
                         }
                     }
 
-
                     Utility utility = new Utility();
-                    int dayCount = 0;
                     foreach (KeyValuePair<string, Dictionary<string, Total>> dates in userObject.Value.Dates)
                     {
                         string dateString = dates.Key;
                         DateTime.TryParseExact(dateString, YearMonthDayFormat, CultureInfo.InvariantCulture, DateTimeStyles.None, out var parsedDateTime);
 
-                        dayCount++;
-
                         foreach (KeyValuePair<string, Total> dateTotals in dates.Value)
                         {
                             if (jobcodes.TryGetValue(dateTotals.Value.JobcodeId.ToString(), out PBJReport.Jobcode jc))
                             {
-                                if (jc.Type.CompareTo("regular") == 0) //Not pto, paid_break, or unpaid_break
+                                if (jc.Type.CompareTo("regular") == 0) //regular type
                                 {
                                     string rateId = jc.Name[RateIdOffset].ToString(); //RateId A,B,C,D,E,F
 
@@ -221,10 +217,11 @@ namespace ConsumerBillingReports
                                     double percentage = ratio * 100;
                                     double amount = units * rateEntry.BillRate;
 
+                                    int dayCount = 1;
                                     cbeTable.Rows.Add(consumer, jc.Name, hours, units, percentage, rateEntry.WCode,
-                                        rateEntry.BillRate, amount, dayCount);
+                                        rateEntry.BillRate, amount);
                                 }
-                                else
+                                else if (jc.Type.CompareTo("pto") == 0) //pto type 
                                 {
                                     double hours = utility.DurationToHours(dateTotals.Value.TotalPtoSeconds);
                                     int units = 0;
@@ -233,8 +230,13 @@ namespace ConsumerBillingReports
                                     double billRate = 0;
                                     double amount = 0;
 
+                                    int dayCount = 1;
                                     cbeTable.Rows.Add(consumer, jc.Name, hours, units, percentage, wCode,
-                                        billRate, amount, dayCount);
+                                        billRate, amount);
+                                }
+                                else  //paid_break, or unpaid_break type
+                                {
+                                    
                                 }
                             }
                         }
